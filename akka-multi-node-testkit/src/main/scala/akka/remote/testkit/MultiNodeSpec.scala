@@ -365,7 +365,7 @@ abstract class MultiNodeSpec(val myself: RoleName, _system: ActorSystem, _roles:
    * Enrich `.await()` onto all Awaitables, using remaining duration from the innermost
    * enclosing `within` block or QueryTimeout.
    */
-  implicit def awaitHelper[T](w: Awaitable[T]) = new AwaitHelper(w)
+  implicit def awaitHelper[T](w: Awaitable[T]): AwaitHelper[T] = new AwaitHelper(w)
   class AwaitHelper[T](w: Awaitable[T]) {
     def await: T = Await.result(w, remainingOr(testConductor.Settings.QueryTimeout.duration))
   }
