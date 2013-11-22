@@ -55,12 +55,12 @@ object AkkaBuild extends Build {
       testMailbox in GlobalScope := System.getProperty("akka.testMailbox", "false").toBoolean,
       parallelExecution in GlobalScope := System.getProperty("akka.parallelExecution", "false").toBoolean,
       Publish.defaultPublishTo in ThisBuild <<= crossTarget / "repository",
-      unidocExclude := Seq(samples.id, channelsTests.id, remoteTests.id, akkaSbtPlugin.id),
+      unidocExclude := Seq(samples.id, remoteTests.id, akkaSbtPlugin.id), // channelsTests.id,
       sources in JavaDoc <<= junidocSources,
       javacOptions in JavaDoc := Seq(),
       artifactName in packageDoc in JavaDoc := ((sv, mod, art) => "" + mod.name + "_" + sv.binary + "-" + mod.revision + "-javadoc.jar"),
       packageDoc in Compile <<= packageDoc in JavaDoc,
-      Dist.distExclude := Seq(actorTests.id, akkaSbtPlugin.id, docs.id, samples.id, osgi.id, osgiAries.id, channelsTests.id),
+      Dist.distExclude := Seq(actorTests.id, akkaSbtPlugin.id, docs.id, samples.id, osgi.id, osgiAries.id), //, channelsTests.id),
       // generate online version of docs
       sphinxInputs in Sphinx <<= sphinxInputs in Sphinx in LocalProject(docs.id) map { inputs => inputs.copy(tags = inputs.tags :+ "online") },
       // don't regenerate the pdf, just reuse the akka-docs version
@@ -79,7 +79,7 @@ object AkkaBuild extends Build {
       
     ),
     aggregate = Seq(actor, testkit, actorTests, dataflow, remote, remoteTests, camel, cluster, slf4j, agent, transactor,
-      persistence, mailboxes, zeroMQ, kernel, akkaSbtPlugin, osgi, osgiAries, docs, contrib, samples, channels, channelsTests,
+      persistence, mailboxes, zeroMQ, kernel, akkaSbtPlugin, osgi, osgiAries, docs, contrib, samples, //channels, channelsTests,
       multiNodeTestkit)
   )
 
@@ -569,7 +569,7 @@ object AkkaBuild extends Build {
   lazy val docs = Project(
     id = "akka-docs",
     base = file("akka-docs"),
-    dependencies = Seq(actor, testkit % "test->test", mailboxesCommon % "compile;test->test", channels,
+    dependencies = Seq(actor, testkit % "test->test", mailboxesCommon % "compile;test->test", //channels,
       remote % "compile;test->test", cluster, slf4j, agent, dataflow, transactor, fileMailbox, zeroMQ, camel, osgi, osgiAries,
       persistence % "compile;test->test"),
     settings = defaultSettings ++ site.settings ++ site.sphinxSupport() ++ site.publishSite ++ sphinxPreprocessing ++ cpsPlugin ++ Seq(
@@ -619,26 +619,26 @@ object AkkaBuild extends Build {
     )
   ) configs (MultiJvm)
 
-  lazy val channels = Project(
-    id = "akka-channels-experimental",
-    base = file("akka-channels"),
-    dependencies = Seq(actor),
-    settings = defaultSettings ++ scaladocSettings ++ experimentalSettings ++ Seq(
-      libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      reportBinaryIssues := () // disable bin comp check
-    )
-  )
-
-  lazy val channelsTests = Project(
-    id = "akka-channels-tests",
-    base = file("akka-channels-tests"),
-    dependencies = Seq(channels, testkit % "compile;test->test"),
-    settings = defaultSettings ++ experimentalSettings ++ Seq(
-      publishArtifact in Compile := false,
-      libraryDependencies += Dependencies.excludeM6Modules("org.scala-lang" % "scala-compiler" % scalaVersion.value),
-      reportBinaryIssues := () // disable bin comp check
-    )
-  )
+  // lazy val channels = Project(
+  //   id = "akka-channels-experimental",
+  //   base = file("akka-channels"),
+  //   dependencies = Seq(actor),
+  //   settings = defaultSettings ++ scaladocSettings ++ experimentalSettings ++ Seq(
+  //     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+  //     reportBinaryIssues := () // disable bin comp check
+  //   )
+  // )
+  //
+  // lazy val channelsTests = Project(
+  //   id = "akka-channels-tests",
+  //   base = file("akka-channels-tests"),
+  //   dependencies = Seq(channels, testkit % "compile;test->test"),
+  //   settings = defaultSettings ++ experimentalSettings ++ Seq(
+  //     publishArtifact in Compile := false,
+  //     libraryDependencies += Dependencies.excludeM6Modules("org.scala-lang" % "scala-compiler" % scalaVersion.value),
+  //     reportBinaryIssues := () // disable bin comp check
+  //   )
+  // )
 
   // Settings
 
