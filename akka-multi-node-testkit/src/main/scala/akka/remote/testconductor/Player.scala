@@ -55,14 +55,20 @@ trait Player { this: TestConductorExt ⇒
       def receive = {
         case fsm: ActorRef ⇒
           waiting = sender; fsm ! SubscribeTransitionCallBack(self)
-        case Transition(_, Connecting, AwaitDone) ⇒ // step 1, not there yet
-        case Transition(_, AwaitDone, Connected) ⇒
-          waiting ! Done; context stop self
-        case t: Transition[_] ⇒
-          waiting ! Status.Failure(new RuntimeException("unexpected transition: " + t)); context stop self
-        case CurrentState(_, Connected) ⇒
-          waiting ! Done; context stop self
-        case _: CurrentState[_] ⇒
+        case t: Transition[_] ⇒ // workaround for https://issues.scala-lang.org/browse/SI-5900
+          t match {
+            case Transition(_, Connecting, AwaitDone) ⇒ // step 1, not there yet
+            case Transition(_, AwaitDone, Connected) ⇒
+              waiting ! Done; context stop self
+            case _ ⇒
+              waiting ! Status.Failure(new RuntimeException("unexpected transition: " + t)); context stop self
+          }
+        case c: CurrentState[_] ⇒
+          c match {
+            case CurrentState(_, Connected) ⇒
+              waiting ! Done; context stop self
+            case _ ⇒
+          }
       }
     }))
 
