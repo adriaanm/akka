@@ -76,13 +76,13 @@ private[zeromq] class ConcurrentSocketActor(params: immutable.Seq[SocketOption])
     case x: SocketMeta               ⇒ throw new IllegalStateException("SocketMeta " + x + " only allowed for setting up a socket")
     case c: SocketConnectOption      ⇒ handleConnectOption(c)
     case ps: PubSubOption            ⇒ handlePubSubOption(ps)
-    case Linger(value)               ⇒ socket.setLinger(value)
-    case ReconnectIVL(value)         ⇒ socket.setReconnectIVL(value)
-    case Backlog(value)              ⇒ socket.setBacklog(value)
-    case ReconnectIVLMax(value)      ⇒ socket.setReconnectIVLMax(value)
+    case Linger(value)               ⇒ socket.setLinger(value.toInt) // TODO remove toInt!!
+    case ReconnectIVL(value)         ⇒ socket.setReconnectIVL(value.toInt) // TODO remove toInt!!
+    case Backlog(value)              ⇒ socket.setBacklog(value.toInt) // TODO remove toInt!!
+    case ReconnectIVLMax(value)      ⇒ socket.setReconnectIVLMax(value.toInt) // TODO remove toInt!!
     case MaxMsgSize(value)           ⇒ socket.setMaxMsgSize(value)
-    case SendHighWatermark(value)    ⇒ socket.setSndHWM(value)
-    case ReceiveHighWatermark(value) ⇒ socket.setRcvHWM(value)
+    case SendHighWatermark(value)    ⇒ socket.setSndHWM(value.toInt) // TODO remove toInt!!
+    case ReceiveHighWatermark(value) ⇒ socket.setRcvHWM(value.toInt) // TODO remove toInt!!
     case HighWatermark(value)        ⇒ socket.setHWM(value)
     case Swap(value)                 ⇒ socket.setSwap(value)
     case Affinity(value)             ⇒ socket.setAffinity(value)
@@ -120,7 +120,7 @@ private[zeromq] class ConcurrentSocketActor(params: immutable.Seq[SocketOption])
   override def preStart {
     watchListener()
     setupSocket()
-    poller.register(socket, Poller.POLLIN)
+    poller.register(socket, org.zeromq.ZeroMQ.ZMQ_POLLIN)
     setupConnection()
 
     import SocketType._
@@ -176,9 +176,8 @@ private[zeromq] class ConcurrentSocketActor(params: immutable.Seq[SocketOption])
     val duration = (fromConfig getOrElse ext.DefaultPollTimeout)
     if (duration > Duration.Zero) {
       // for positive timeout values, do poll (i.e. block this thread)
-      val pollLength = duration.toUnit(ext.pollTimeUnit).toLong
       (msg: PollMsg) ⇒
-        poller.poll(pollLength)
+        poller.poll(duration)
         self ! msg
     } else {
       val d = -duration
@@ -199,8 +198,9 @@ private[zeromq] class ConcurrentSocketActor(params: immutable.Seq[SocketOption])
       case frames ⇒ notifyListener(deserializer(frames)); doPoll(mode, togo - 1)
     }
 
+  import scala.concurrent.duration._
   @tailrec private def receiveMessage(mode: PollMsg, currentFrames: Vector[ByteString] = Vector.empty): immutable.Seq[ByteString] =
-    if (mode == PollCareful && (poller.poll(0) <= 0)) {
+    if (mode == PollCareful && (poller.poll(0.seconds) <= 0)) {
       if (currentFrames.isEmpty) currentFrames else throw new IllegalStateException("Received partial transmission!")
     } else {
       socket.recv(if (mode == Poll) JZMQ.NOBLOCK else 0) match {
