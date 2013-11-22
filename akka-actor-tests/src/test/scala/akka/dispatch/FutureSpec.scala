@@ -155,23 +155,23 @@ class FutureSpec extends AkkaSpec with Checkers with BeforeAndAfterAll with Defa
           test(future, result)
         }
       }
-      "has actions applied" must {
-        "pass checks" in {
-          filterException[ArithmeticException] {
-            check({ (future: Future[Int], actions: List[FutureAction]) ⇒
-              def wrap[T](f: Future[T]): Try[T] = FutureSpec.ready(f, timeout.duration).value.get
-              val result = (future /: actions)(_ /: _)
-              val expected = (wrap(future) /: actions)(_ /: _)
-              ((wrap(result), expected) match {
-                case (Success(a), Success(b)) ⇒ a == b
-                case (Failure(a), Failure(b)) if a.toString == b.toString ⇒ true
-                case (Failure(a), Failure(b)) if a.getStackTrace.isEmpty || b.getStackTrace.isEmpty ⇒ a.getClass.toString == b.getClass.toString
-                case _ ⇒ false
-              }) :| result.value.get.toString + " is expected to be " + expected.toString
-            }, minSuccessful(10000), workers(4))
-          }
-        }
-      }
+      // "has actions applied" must {
+      //   "pass checks" in {
+      //     filterException[ArithmeticException] {
+      //       check({ (future: Future[Int], actions: List[FutureAction]) ⇒
+      //         def wrap[T](f: Future[T]): Try[T] = FutureSpec.ready(f, timeout.duration).value.get
+      //         val result = (future /: actions)(_ /: _)
+      //         val expected = (wrap(future) /: actions)(_ /: _)
+      //         ((wrap(result), expected) match {
+      //           case (Success(a), Success(b)) ⇒ a == b
+      //           case (Failure(a), Failure(b)) if a.toString == b.toString ⇒ true
+      //           case (Failure(a), Failure(b)) if a.getStackTrace.isEmpty || b.getStackTrace.isEmpty ⇒ a.getClass.toString == b.getClass.toString
+      //           case _ ⇒ false
+      //         }) :| result.value.get.toString + " is expected to be " + expected.toString
+      //       }, minSuccessful(10000), workers(4))
+      //     }
+      //   }
+      // }
     }
 
     "from an Actor" which {
@@ -726,20 +726,20 @@ class FutureSpec extends AkkaSpec with Checkers with BeforeAndAfterAll with Defa
 
   implicit def arbFuture: Arbitrary[Future[Int]] = Arbitrary(for (n ← arbitrary[Int]) yield Future(n))
 
-  implicit def arbFutureAction: Arbitrary[FutureAction] = Arbitrary {
-
-    val genIntAction = for {
-      n ← arbitrary[Int]
-      a ← oneOf(IntAdd(n), IntSub(n), IntMul(n), IntDiv(n))
-    } yield a
-
-    val genMapAction = genIntAction map (MapAction(_))
-
-    val genFlatMapAction = genIntAction map (FlatMapAction(_))
-
-    oneOf(genMapAction, genFlatMapAction)
-
-  }
+  // implicit def arbFutureAction: Arbitrary[FutureAction] = Arbitrary {
+  //
+  //   val genIntAction = for {
+  //     n ← arbitrary[Int]
+  //     a ← oneOf(IntAdd(n), IntSub(n), IntMul(n), IntDiv(n))
+  //   } yield a
+  //
+  //   val genMapAction = genIntAction map (MapAction(_))
+  //
+  //   val genFlatMapAction = genIntAction map (FlatMapAction(_))
+  //
+  //   oneOf(genMapAction, genFlatMapAction)
+  //
+  // }
 
   def checkType[A: ClassTag, B](in: Future[A], reftag: ClassTag[B]): Boolean = implicitly[ClassTag[A]].runtimeClass == reftag.runtimeClass
 }

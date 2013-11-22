@@ -189,26 +189,26 @@ class ChainingSample extends Actor with Aggregator {
 
 class AggregatorSpec extends TestKit(ActorSystem("test")) with ImplicitSender with FunSuiteLike with ShouldMatchers {
 
-  test("Test request 1 account type") {
-    system.actorOf(Props[AccountBalanceRetriever]) ! GetCustomerAccountBalances(1, Set(Savings))
-    receiveOne(10.seconds) match {
-      case result: List[_] ⇒
-        result should have size 1
-      case result ⇒
-        assert(condition = false, s"Expect List, got ${result.getClass}")
-    }
-  }
-
-  test("Test request 3 account types") {
-    system.actorOf(Props[AccountBalanceRetriever]) !
-      GetCustomerAccountBalances(1, Set(Checking, Savings, MoneyMarket))
-    receiveOne(10.seconds) match {
-      case result: List[_] ⇒
-        result should have size 3
-      case result ⇒
-        assert(condition = false, s"Expect List, got ${result.getClass}")
-    }
-  }
+  // test("Test request 1 account type") {
+  //   system.actorOf(Props[AccountBalanceRetriever]) ! GetCustomerAccountBalances(1, Set(Savings))
+  //   receiveOne(10.seconds) match {
+  //     case result: List[_] ⇒
+  //       result should have size 1
+  //     case result ⇒
+  //       assert(condition = false, s"Expect List, got ${result.getClass}")
+  //   }
+  // }
+  //
+  // test("Test request 3 account types") {
+  //   system.actorOf(Props[AccountBalanceRetriever]) !
+  //     GetCustomerAccountBalances(1, Set(Checking, Savings, MoneyMarket))
+  //   receiveOne(10.seconds) match {
+  //     case result: List[_] ⇒
+  //       result should have size 3
+  //     case result ⇒
+  //       assert(condition = false, s"Expect List, got ${result.getClass}")
+  //   }
+  // }
 }
 
 case class TestEntry(id: Int)

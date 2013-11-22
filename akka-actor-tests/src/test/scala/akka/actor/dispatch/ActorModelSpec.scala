@@ -134,15 +134,15 @@ object ActorModelSpec {
       getStats(actor.self).resumes.incrementAndGet()
     }
 
-    protected[akka] abstract override def register(actor: ActorCell) {
-      assert(getStats(actor.self).registers.incrementAndGet() == 1)
-      super.register(actor)
-    }
-
-    protected[akka] abstract override def unregister(actor: ActorCell) {
-      assert(getStats(actor.self).unregisters.incrementAndGet() == 1)
-      super.unregister(actor)
-    }
+    // protected[akka] abstract override def register(actor: ActorCell) {
+    //   assert(getStats(actor.self).registers.incrementAndGet() == 1)
+    //   super.register(actor)
+    // }
+    //
+    // protected[akka] abstract override def unregister(actor: ActorCell) {
+    //   assert(getStats(actor.self).unregisters.incrementAndGet() == 1)
+    //   super.unregister(actor)
+    // }
 
     protected[akka] abstract override def dispatch(receiver: ActorCell, invocation: Envelope) {
       val stats = getStats(receiver.self)

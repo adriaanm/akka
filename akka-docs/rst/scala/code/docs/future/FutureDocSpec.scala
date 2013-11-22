@@ -416,17 +416,17 @@ class FutureDocSpec extends AkkaSpec {
     Await.result(theFuture, 3 seconds) must be("hello")
   }
 
-  "demonstrate usage of pattern.after" in {
-    //#after
-    import akka.pattern.after
-
-    val delayed = after(200 millis, using = system.scheduler)(Future.failed(
-      new IllegalStateException("OHNOES")))
-    val future = Future { Thread.sleep(1000); "foo" }
-    val result = Future firstCompletedOf Seq(future, delayed)
-    //#after
-    intercept[IllegalStateException] { Await.result(result, 2 second) }
-  }
+  // "demonstrate usage of pattern.after" in {
+  //   //#after
+  //   import akka.pattern.after
+  //
+  //   val delayed = after(200 millis, using = system.scheduler)(Future.failed(
+  //     new IllegalStateException("OHNOES")))
+  //   val future = Future { Thread.sleep(1000); "foo" }
+  //   val result = Future firstCompletedOf Seq(future, delayed)
+  //   //#after
+  //   intercept[IllegalStateException] { Await.result(result, 2 second) }
+  // }
 
   "demonstrate context.dispatcher" in {
     //#context-dispatcher
