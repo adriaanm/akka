@@ -4,7 +4,7 @@
 package akka.cluster
 
 import language.implicitConversions
-import org.scalatest.Suite
+import org.scalatest.{ Suite, Outcome }
 import org.scalatest.exceptions.TestFailedException
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
@@ -162,7 +162,7 @@ trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec with WatchedByCoro
   // it will most likely not be possible to run next step. This ensures
   // fail fast of steps after the first failure.
   private var failed = false
-  override protected def withFixture(test: NoArgTest): Unit = try {
+  override protected def withFixture(test: NoArgTest): Outcome = try {
     if (failed) {
       val e = new TestFailedException("Previous step failed", 0)
       // short stack trace

@@ -8,7 +8,18 @@ import org.scalatest.tools.StandardOutReporter
 import org.scalatest.events._
 import java.lang.Boolean.getBoolean
 
-class QuietReporter(inColor: Boolean, withDurations: Boolean = false) extends StandardOutReporter(withDurations, inColor, false, true) {
+class QuietReporter(inColor: Boolean, withDurations: Boolean = false)
+  extends StandardOutReporter(
+    presentAllDurations = withDurations,
+    presentInColor = inColor,
+    presentShortStackTraces = false,
+    presentFullStackTraces = true,
+    presentUnformatted = false,
+    presentReminder = false,
+    presentReminderWithShortStackTraces = false,
+    presentReminderWithFullStackTraces = false,
+    presentReminderWithoutCanceledTests = false) {
+
   def this() = this(!getBoolean("akka.test.nocolor"), !getBoolean("akka.test.nodurations"))
 
   override def apply(event: Event): Unit = event match {
@@ -16,5 +27,5 @@ class QuietReporter(inColor: Boolean, withDurations: Boolean = false) extends St
     case _              ⇒ super.apply(event)
   }
 
-  override def makeFinalReport(resourceName: String, duration: Option[Long], summaryOption: Option[Summary]) {}
+  // override def makeFinalReport(resourceName: String, duration: Option[Long], summaryOption: Option[Summary]) {}
 }
