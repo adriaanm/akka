@@ -77,7 +77,7 @@ object AkkaBuild extends Build {
       validatePullRequest <<= (Unidoc.unidoc, SphinxSupport.generate in Sphinx in docs) map { (_, _) => }
     ),
     aggregate = Seq(actor, testkit, actorTests, dataflow, remote, remoteTests, camel, cluster, slf4j, agent, transactor,
-      persistence, persistenceTck, mailboxes, zeroMQ, kernel, osgi, docs, contrib, samples, multiNodeTestkit)
+      persistence, persistenceTck, mailboxes, kernel, osgi, docs, contrib, samples, multiNodeTestkit)
   )
 
   lazy val akkaScalaNightly = Project(
@@ -335,15 +335,6 @@ object AkkaBuild extends Build {
     )
   )
 
-  lazy val zeroMQ = Project(
-    id = "akka-zeromq",
-    base = file("akka-zeromq"),
-    dependencies = Seq(actor, testkit % "test;test->test"),
-    settings = defaultSettings ++ formatSettings ++ scaladocSettings ++ javadocSettings ++ OSGi.zeroMQ ++ Seq(
-      Dependencies.zeroMQ,
-      previousArtifact := akkaPreviousArtifact("akka-zeromq").value
-    )
-  )
 
   lazy val kernel = Project(
     id = "akka-kernel",
@@ -581,7 +572,7 @@ object AkkaBuild extends Build {
     id = "akka-docs",
     base = file("akka-docs"),
     dependencies = Seq(actor, testkit % "test->test",
-      remote % "compile;test->test", cluster, slf4j, agent, zeroMQ, camel, osgi, persistence, persistenceTck),
+      remote % "compile;test->test", cluster, slf4j, agent, camel, osgi, persistence, persistenceTck),
     settings = defaultSettings ++ docFormatSettings ++ site.settings ++ site.sphinxSupport() ++ site.publishSite ++ sphinxPreprocessing ++ cpsPlugin ++ Seq(
       sourceDirectory in Sphinx <<= baseDirectory / "rst",
       sphinxPackages in Sphinx <+= baseDirectory { _ / "_sphinx" / "pygments" },
@@ -1099,7 +1090,6 @@ object AkkaBuild extends Build {
 
     val testkit = exports(Seq("akka.testkit.*"))
 
-    val zeroMQ = exports(Seq("akka.zeromq.*"), imports = Seq(protobufImport()) )
 
     val osgiOptionalImports = Seq(
       // needed because testkit is normally not used in the application bundle,
@@ -1162,11 +1152,6 @@ object Dependencies {
     val scalaStm      = "org.scala-stm"              %% "scala-stm"                    % scalaStmVersion // Modified BSD (Scala)
 
     val slf4jApi      = "org.slf4j"                   % "slf4j-api"                    % "1.7.5"       // MIT
-    val zeroMQClient = ScalaVersionDependentModuleID.fromPF {
-      case version if version.startsWith("2.10") => "org.zeromq"                % "zeromq-scala-binding_2.10" % "0.0.7"        // ApacheV2
-      case version if version.startsWith("2.11") => "org.spark-project.zeromq"  % "zeromq-scala-binding_2.11" % "0.0.7-spark"  // ApacheV2
-      case v => throw new RuntimeException("Scala version $v not supported for zeromq")
-    }
     // mirrored in OSGi sample
     val uncommonsMath = "org.uncommons.maths"         % "uncommons-maths"              % "1.2.2a" exclude("jfree", "jcommon") exclude("jfree", "jfreechart")      // ApacheV2
     // mirrored in OSGi sample
@@ -1269,7 +1254,6 @@ object Dependencies {
 
   val docs = deps(Test.scalatest, Test.junit, Test.junitIntf, Test.scalaXml)
 
-  val zeroMQ = deps(protobuf, zeroMQClient, Test.scalatest, Test.junit)
 
   val clusterSample = Seq(Test.scalatest, sigar)
 
