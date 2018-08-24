@@ -263,6 +263,7 @@ lazy val persistence = akkaModule("akka-persistence")
   .settings(AutomaticModuleName.settings("akka.persistence"))
   .settings(OSGi.persistence)
   .settings(Protobuf.settings)
+  .settings(incOptions := incOptions.value.withEnabled(false))
   .settings(
     fork in Test := true
   )
