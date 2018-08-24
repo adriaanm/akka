@@ -11,7 +11,7 @@ import com.typesafe.sbt.pgp.PgpKeys.publishSigned
 import sbt.Keys._
 import sbt._
 
-import scalafix.sbt.ScalafixPlugin.autoImport.scalafixDepedencies
+// import scalafix.sbt.ScalafixPlugin.autoImport.scalafixDepedencies
 
 object AkkaBuild {
 
@@ -91,7 +91,7 @@ object AkkaBuild {
 
   lazy val scalafixSettings = Seq(
     scalacOptions += "-Yrangepos",
-    scalafixDepedencies += "org.scala-lang.modules" % "scala-collection-migrations" % Dependencies.collectionCompatVersion
+    // scalafixDepedencies += "org.scala-lang.modules" % "scala-collection-migrations" % Dependencies.collectionCompatVersion
   )
 
   lazy val defaultSettings = scalafixSettings ++ resolverSettings ++

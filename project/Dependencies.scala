@@ -17,29 +17,34 @@ object Dependencies {
   val junitVersion = "4.12"
   val sslConfigVersion = "0.2.4"
   val slf4jVersion = "1.7.25"
-  val scalaXmlVersion = "1.1.0"
+  val scalaXmlVersion = "0.1-dbuildxaf84cb73707e9e26e4696537914e419e6e809a84"
   val aeronVersion = "1.9.1"
 
   val collectionCompatVersion = "0.2.0-SNAPSHOT"
 
   val Versions = Seq(
-    crossScalaVersions := Seq("2.13.0-M4", "2.12.4", "2.11.12"),
-    scalaVersion := System.getProperty("akka.build.scalaVersion", crossScalaVersions.value.head),
+    // crossScalaVersions := Seq("2.13.0-M4", "2.12.4", "2.11.12"),
+    // scalaVersion := System.getProperty("akka.build.scalaVersion", crossScalaVersions.value.head),
     scalaStmVersion := sys.props.get("akka.build.scalaStmVersion").getOrElse("0.9"),
-    scalaCheckVersion := sys.props.get("akka.build.scalaCheckVersion").getOrElse(
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, n)) if n >= 12 ⇒ "1.14.0" // does not work for 2.11
-        case _                       ⇒ "1.13.2"
-      }),
-    scalaTestVersion := {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, n)) if n >= 13 => "3.0.6-SNAP1"
-        case _ => "3.0.4"
-      }
-    },
+    // scalaCheckVersion := sys.props.get("akka.build.scalaCheckVersion").getOrElse(
+    //   CrossVersion.partialVersion(scalaVersion.value) match {
+    //     case Some((2, n)) if n >= 12 ⇒ "1.14.0" // does not work for 2.11
+    //     case _                       ⇒ "1.13.2"
+    //   }),
+    // scalaTestVersion := {
+    //   CrossVersion.partialVersion(scalaVersion.value) match {
+    //     case Some((2, n)) if n >= 13 => "3.0.6-SNAP1"
+    //     case _ => "3.0.4"
+    //   }
+    // },
+
+    scalaVersion := "2.13.0-pre-6c20b59-SNAPSHOT",
+    scalaCheckVersion := "0.1.0-dbuildx3936eea1fa85c2f301ed75b36b582b89cd0b4aef",
+    scalaTestVersion := "3.0.6-dbuildx8b34bec73b33e3d2a33b5568f2038c5fce3cb81e",
+
     java8CompatVersion := {
       CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, n)) if n >= 13 ⇒ "0.9.0"
+        case Some((2, n)) if n >= 13 ⇒ "0.8.0"
         case Some((2, n)) if n == 12 ⇒ "0.8.0"
         case _                       ⇒ "0.7.0"
       }
@@ -55,7 +60,7 @@ object Dependencies {
     val netty = "io.netty" % "netty" % "3.10.6.Final" // ApacheV2
     val scalaStm = Def.setting { "org.scala-stm" %% "scala-stm" % scalaStmVersion.value } // Modified BSD (Scala)
 
-    val scalaXml = "org.scala-lang.modules" %% "scala-xml" % scalaXmlVersion // Scala License
+    val scalaXml = "org.scala-lang.modules" % "scala-xml" % scalaXmlVersion // Scala License
     val scalaReflect = ScalaVersionDependentModuleID.versioned("org.scala-lang" % "scala-reflect" % _) // Scala License
 
     val slf4jApi = "org.slf4j" % "slf4j-api" % slf4jVersion // MIT
@@ -99,12 +104,12 @@ object Dependencies {
       val logback = "ch.qos.logback" % "logback-classic" % "1.2.3" % "test" // EPL 1.0 / LGPL 2.1
       val mockito = "org.mockito" % "mockito-core" % "2.7.16" % "test" // MIT
       // changing the scalatest dependency must be reflected in akka-docs/rst/dev/multi-jvm-testing.rst
-      val scalatest = Def.setting { "org.scalatest" %% "scalatest" % scalaTestVersion.value % "test" } // ApacheV2
-      val scalacheck = Def.setting { "org.scalacheck" %% "scalacheck" % scalaCheckVersion.value % "test" } // New BSD
+      val scalatest = Def.setting { "org.scalatest" % "scalatest" % scalaTestVersion.value % "test" } // ApacheV2
+      val scalacheck = Def.setting { "org.scalacheck" % "scalacheck" % scalaCheckVersion.value % "test" } // New BSD
       val pojosr = "com.googlecode.pojosr" % "de.kalpatec.pojosr.framework" % "0.2.1" % "test" // ApacheV2
       val tinybundles = "org.ops4j.pax.tinybundles" % "tinybundles" % "1.0.0" % "test" // ApacheV2
       val log4j = "log4j" % "log4j" % "1.2.17" % "test" // ApacheV2
-      val scalaXml = "org.scala-lang.modules" %% "scala-xml" % scalaXmlVersion % "test"
+      val scalaXml = "org.scala-lang.modules" % "scala-xml" % scalaXmlVersion % "test"
 
       // in-memory filesystem for file related tests
       val jimfs = "com.google.jimfs" % "jimfs" % "1.1" % "test" // ApacheV2
