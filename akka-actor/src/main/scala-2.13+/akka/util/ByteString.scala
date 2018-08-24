@@ -376,7 +376,7 @@ object ByteString {
       }
     }
 
-    protected def writeReplace(): AnyRef = new SerializationProxy(this)
+    protected override def writeReplace(): AnyRef = new SerializationProxy(this)
   }
 
   private[akka] object ByteStrings extends Companion {
@@ -611,7 +611,7 @@ object ByteString {
       }
     }
 
-    protected def writeReplace(): AnyRef = new SerializationProxy(this)
+    protected override def writeReplace(): AnyRef = new SerializationProxy(this)
   }
 
   @SerialVersionUID(1L)
@@ -657,7 +657,7 @@ sealed abstract class ByteString
   with IndexedSeqOps[Byte, IndexedSeq, ByteString]
   with StrictOptimizedSeqOps[Byte, IndexedSeq, ByteString] {
 
-  override protected def fromSpecificIterable(coll: Iterable[Byte]): ByteString = ByteString.fromSpecific(coll)
+  protected def fromSpecificIterable(coll: Iterable[Byte]): ByteString = ByteString.fromSpecific(coll)
   override protected def newSpecificBuilder: mutable.Builder[Byte, ByteString] = ByteString.newBuilder
 
   def apply(idx: Int): Byte
@@ -701,11 +701,10 @@ sealed abstract class ByteString
 
   override def splitAt(n: Int): (ByteString, ByteString) = (take(n), drop(n))
 
-  /* override */ def indexWhere(p: Byte ⇒ Boolean): Int = iterator.indexWhere(p)
+  override def indexWhere(p: Byte ⇒ Boolean): Int = iterator.indexWhere(p)
 
   // optimized in subclasses
-  // override
-  def indexOf[B >: Byte](elem: B): Int = indexOf(elem, 0)
+  override def indexOf[B >: Byte](elem: B): Int = indexOf(elem, 0)
 
   override def grouped(size: Int): Iterator[ByteString] = {
     if (size <= 0) {

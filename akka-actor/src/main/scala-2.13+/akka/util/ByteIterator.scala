@@ -91,11 +91,11 @@ object ByteIterator {
       this
     }
 
-    final override def copyToArray[B >: Byte](xs: Array[B], start: Int, len: Int): xs.type = {
+    final override def copyToArray[B >: Byte](xs: Array[B], start: Int, len: Int): Int = {
       val n = 0 max ((xs.length - start) min this.len min len)
       Array.copy(this.array, from, xs, start, n)
       this.drop(n)
-      xs
+      n
     }
 
     final override def toByteString: ByteString = {
@@ -287,11 +287,12 @@ object ByteIterator {
         if (dropMore) dropWhile(p) else this
       } else this
 
-    final override def copyToArray[B >: Byte](xs: Array[B], start: Int, len: Int): xs.type = {
+    final override def copyToArray[B >: Byte](xs: Array[B], start: Int, len: Int): Int = {
       var pos = start
       var rest = len
+      var n = 0
       while ((rest > 0) && !iterators.isEmpty) {
-        val n = 0 max ((xs.length - pos) min current.len min rest)
+        n = 0 max ((xs.length - pos) min current.len min rest)
         current.copyToArray(xs, pos, n)
         pos += n
         rest -= n
@@ -300,7 +301,7 @@ object ByteIterator {
         }
       }
       normalize()
-      xs
+      n
     }
 
     override def foreach[@specialized U](f: Byte ⇒ U): Unit = {
